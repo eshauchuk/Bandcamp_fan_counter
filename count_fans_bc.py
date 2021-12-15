@@ -1,15 +1,13 @@
-#!/usr/bin/env conda run -n base python
-
+#!/usr/bin/env python3
 def bc_counter(tracks = None):
     from urllib.parse import urlsplit
     from urllib.request import urlopen
     import json
     import requests
     from bs4 import BeautifulSoup
-    import pandas as pd
     import validators
+    
     track_list = tracks 
-
     if track_list is None:
         print('\n********** NO LINKS!!! **********\n')
     elif len(track_list) == 0:
@@ -24,10 +22,11 @@ def bc_counter(tracks = None):
             return "FAILD TO CONNECT TO SOME"
         print('\n********** GOT ALL LINKS **********\n')
 
-
         # WEB SCRAPING the links from each track
         super_fan_list = []
+        super_fan_dict = {}
         for get_link in track_list:
+
             link=urlsplit(get_link)
 
             base_link=f'{link.scheme}://{link.netloc}'
@@ -67,36 +66,34 @@ def bc_counter(tracks = None):
                 for result in r['results']:
                     fan_list.append(result['url'])
                 super_fan_list.append({'track_name': track_title, 'track_fans': fan_list})
+                super_fan_dict[track_title] = fan_list
 
-        # Sort and count matches (this is only needed if i wanted to do everything in python w/o pandas)
-        super_fan_list.sort(key=lambda x: len(x['track_fans']))
-
-        df = pd.DataFrame(super_fan_list)
-        df = df.explode('track_fans')
-
-        # print(df.groupby('track_name').count())
+                super_fan_list.sort(key=lambda x: len(x['track_fans']))
+                # counting tracks that bought several tracks
+                super_super_fan_list = []
+                fan_history = []
+                for track_title, fan_list in super_fan_dict.items():
+                    for fan in fan_list:
+                        if fan not in fan_history:
+                            fan_history.append(fan)
+                            
+                            fan_count = 0
+                            fan_combo = []
+                            for track in super_fan_dict:
+                                if fan in super_fan_dict[track]:
+                                    fan_count += 1
+                                    fan_combo.append(track)
+                            if fan_count > 1:
+                                super_super_fan_list.append([fan, fan_count, fan_combo])
+                        else:
+                            continue
+                super_super_fan_list.sort(key=lambda x: len(x[2]), reverse = True)
 
         start_string = '*' *8
-        print(start_string,'FANS THAT BOUGHT MORE THAN JUST 1 TRACK', start_string)
-        fans= df.track_fans.value_counts()
-        print('FANS THAT BOUGHT MORE THAN JUST 1 TRACK: ', fans[fans>1].shape[0] )
+        print(start_string,'FANS THAT BOUGHT MORE THAN JUST 1 TRACK: ', len(super_super_fan_list), start_string)
 
-        # preparing final df 
-        combo_fans = fans[fans>1]
+        return super_super_fan_list
 
-        fan_tracks = []
-        for fan in combo_fans.index:
-            fan_tracks.append(
-                df.loc[df.track_fans == fan, 'track_name'].values)
-
-        final_df = pd.DataFrame({'track_fans':combo_fans.index, 'fans_combo':combo_fans, 
-            'combo_tracks': fan_tracks}).reset_index(drop=True)
-        
-        final_groups = final_df.explode('combo_tracks').groupby(
-            ['track_fans', 'fans_combo', 'combo_tracks']).count().sort_index(level = 1, ascending=False)
-
-        
-        return final_df # need to reset index to print out in a pretty way 
 
     else:
         print('\n********** One/some of the links are not correct **********\n')
@@ -116,13 +113,4 @@ if __name__ == "__main__":
     import os
    # stuff only to run when not called via 'import' here
     data = bc_counter(track_list)
-    
-
-
-
-
-
-
-
-
-
+    print(data)
