@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 from count_fans_bc import bc_counter
 import PySimpleGUI as sg
 import webbrowser

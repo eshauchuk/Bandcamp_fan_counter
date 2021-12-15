@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 def bc_counter(tracks = None):
     from urllib.parse import urlsplit
     from urllib.request import urlopen
