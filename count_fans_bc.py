@@ -21,7 +21,7 @@ def bc_counter(tracks = None):
             all(urlopen(url).getcode() == 200 for url in track_list)
         except Exception as e:
             print("hmmm, something happened:", e)
-            return "FAILD TO CONNECT TO SOME OF LINKS"
+            return "FAILD TO CONNECT TO SOME"
         print('\n********** GOT ALL LINKS **********\n')
 
 
@@ -47,7 +47,7 @@ def bc_counter(tracks = None):
                         track_title=track_title+j
                 except Exception as e:
                     return e
-                print(f'SEARCHING FOR FAN LIST OF TRACK ==> {track_title}')
+                print(f'SEARCHING FOR FAN LIST OF THE TRACK ==> {track_title}')
 
                 # session/json post for lazy loading, help from diggusbickus
                 # the data for tralbum_type and tralbum_id are stored in a script attribute
@@ -60,7 +60,7 @@ def bc_counter(tracks = None):
                     "count":2000} # ridiculous number
 
                 r=s.post(post_link, json=open_more).json()
-                print('LEN OF FOUND FAN RESULST s.post : ',len(r['results']))       
+                print('TOTAL FOUND FANS OF THE TRACK : ',len(r['results']))       
                 # getting links NEW WAY through requests.sessions.post.json() 
                 fan_list = []
                 
@@ -77,9 +77,9 @@ def bc_counter(tracks = None):
         # print(df.groupby('track_name').count())
 
         start_string = '*' *8
-        print(start_string,'MORE MATCHES THAN JUST 1', start_string)
+        print(start_string,'FANS THAT BOUGHT MORE THAN JUST 1 TRACK', start_string)
         fans= df.track_fans.value_counts()
-        print('LEN OF FOUND COMBO MATCHES: ', fans[fans>1].shape[0] )
+        print('FANS THAT BOUGHT MORE THAN JUST 1 TRACK: ', fans[fans>1].shape[0] )
 
         # preparing final df 
         combo_fans = fans[fans>1]
