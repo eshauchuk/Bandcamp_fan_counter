@@ -10,5 +10,5 @@ pip install -r requirements.txt
 ```
 Run by:
 ```
-python count_fans_bc.py
+python bandcamp_fan_counter.command
 ```
