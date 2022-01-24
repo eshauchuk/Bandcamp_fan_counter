@@ -1,5 +1,6 @@
 #!/usr/bin/env conda run -n base python
 
+# this uses pandas 
 def bc_counter(tracks = None):
     from urllib.parse import urlsplit
     from urllib.request import urlopen
